@@ -5,6 +5,6 @@
         bool Add(string countryCode);
         bool Remove(string countryCode);
         bool IsBlocked(string countryCode);
-        List<string> GetAll();
+        List<string> GetAll(String filter = "");
     }
 }

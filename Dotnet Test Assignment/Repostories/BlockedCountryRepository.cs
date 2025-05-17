@@ -43,10 +43,17 @@ namespace Dotnet_Test_Assignment.Repostories
             return list.Contains(countryCode.ToUpper())||temporaryService.IsTemporarilyBlocked(countryCode); ;
         }
 
-        public List<string> GetAll()
+        public List<string> GetAll(String filter="")
         {
-            var list = _cache.Get<HashSet<string>>(CACHE_KEY);
-            return list.ToList();
+            var blocked = _cache.Get<HashSet<string>>(CACHE_KEY);
+            var tempBlocked = temporaryService.GetAll();
+            var combined = blocked
+            .Concat(tempBlocked.Select(t=>t.CountryCode))
+             .GroupBy(c => c.ToUpper())
+             .Select(g => g.First())
+              .ToList(); ;
+
+            return string.IsNullOrEmpty(filter)?  combined.ToList(): combined.Where(c => c.Equals(filter)).ToList();
         }
     }
 }

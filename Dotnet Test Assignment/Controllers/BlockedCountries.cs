@@ -38,9 +38,9 @@ namespace Dotnet_Test_Assignment.Controllers
         }
 
         [HttpGet("blocked")]
-        public IActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public IActionResult GetAll([FromQuery] string? filter,[FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var all = _repo.GetAll();
+            var all = _repo.GetAll(filter);
             var paged = all.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             return Ok(paged);
         }
