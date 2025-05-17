@@ -9,6 +9,7 @@ namespace Dotnet_Test_Assignment.Services
     {
     
         private readonly HttpClient _httpClient;
+        private readonly string _apiKey = "059f4eb7c17747bba4dc67523e94a0b8";
 
         public IpLookupService(HttpClient httpClient)
         {
@@ -17,7 +18,10 @@ namespace Dotnet_Test_Assignment.Services
 
         public async Task<IpLookupResult> LookupIpAsync(string ipAddress)
         {
-            var url = $"https://ipapi.co/{ipAddress}/json/";
+            if (!IsValidIp(ipAddress))
+                throw new ArgumentException("Invalid IP address format");
+
+            var url = $"https://api.ipgeolocation.io/ipgeo?apiKey={_apiKey}&ip={ipAddress}";
 
             var httpResponse = await _httpClient.GetAsync(url);
 
@@ -31,15 +35,15 @@ namespace Dotnet_Test_Assignment.Services
                 PropertyNameCaseInsensitive = true
             });
 
-            if (response == null || string.IsNullOrWhiteSpace(response.country))
+            if (response == null || string.IsNullOrWhiteSpace(response.CountryName))
                 throw new Exception("Failed to fetch IP details from API");
 
             return new IpLookupResult
             {
-                IpAddress = response.ip,
-                CountryCode = response.country,
-                CountryName = response.country_name,
-                Isp = response.org
+                IpAddress = response.Ip,
+                CountryCode = response.CountryCode,
+                CountryName = response.CountryName,
+                Isp = response.Isp
             };
         }
 
